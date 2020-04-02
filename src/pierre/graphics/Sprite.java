@@ -1,4 +1,4 @@
-package code;
+package pierre.graphics;
 
 import java.awt.image.BufferedImage;
 import java.awt.image.DataBufferInt;
@@ -16,6 +16,7 @@ public class Sprite {
     private int width;
     private int height;
     private int[] pixels;
+    private int color;
 
     public Sprite(int w, int h) {
         this.width = w;
@@ -29,6 +30,7 @@ public class Sprite {
     public Sprite(int w, int h, int col) {
         this.width = w;
         this.height = h;
+        this.color = col;
         pixels = new int[w*h];
         for (int i = 0 ; i < pixels.length ; i++) {
             pixels[i] = col;
@@ -67,5 +69,8 @@ public class Sprite {
         for (int i = 0 ; i < pixels.length ; i++) {
             pixels[i] = color;
         }
+    }
+    public int getColor() {
+        return color;
     }
 }
