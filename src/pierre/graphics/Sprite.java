@@ -33,9 +33,10 @@ public class Sprite {
         this.color = col;
         pixels = new int[w*h];
         for (int i = 0 ; i < pixels.length ; i++) {
-            pixels[i] = col;
+                pixels[i] = col;
         }
     }
+
 
     public Sprite(String path) {
         BufferedImage image = null;

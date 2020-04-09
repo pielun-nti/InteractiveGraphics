@@ -52,6 +52,7 @@ public class Graphics extends Canvas implements Runnable {
     private JMenuItem itemExitProgram;
     private JMenuItem itemSaveImageAs;
     private JMenuItem itemImportImage;
+    private JMenuItem itemChangePaintSize;
     private JMenuItem itemChangePaintColor;
     private JMenuItem itemAbout;
     private Font myFont;
@@ -59,6 +60,7 @@ public class Graphics extends Canvas implements Runnable {
     private static Font menuFont;
     private String ProgramTitle = "Graphics GUI";
     private static String programAuthor = "Pierre Lundström";
+    private boolean firstTime = true;
 
     /**
      * Constructor
@@ -103,7 +105,8 @@ public class Graphics extends Canvas implements Runnable {
         this.addMouseMotionListener(new MyMouseMotionListener());
         this.addMouseListener(new MyMouseListener());
         this.requestFocus();
-        square1 = new Sprite(16,16,0xFF00FF);
+        //square1 = new Sprite(16,16,0xFF00FF);
+        //Sprite sprite = new Sprite(true);
     }
 
     /**
@@ -456,24 +459,26 @@ public class Graphics extends Canvas implements Runnable {
     }
 
     private void update() {
-        t += Math.PI/180;
+        if (!firstTime) {
+            t += Math.PI / 180;
 
-        for (int i = 0 ; i < square1.getHeight() ; i++) {
-            for (int j = 0 ; j < square1.getWidth() ; j++) {
-               // if ((ySquare1+i)* * width <= (width * scale) & (xSquare1+)) {
+            for (int i = 0; i < square1.getHeight(); i++) {
+                for (int j = 0; j < square1.getWidth(); j++) {
+                    // if ((ySquare1+i)* * width <= (width * scale) & (xSquare1+)) {
 
-                //}
-                try {
-                    //if ((ySquare1 + i) * height + j > height) {
-                   //     System.out.println("return because y is of out bounds");
-                   // }
-                    //if (j <= width*scale & i < (height*mainMenuBar.getSize().getWidth())*scale || j <= width*scale & i <= (-height * scale)) {
-                        pixels[(ySquare1 + i) * width + xSquare1 + j] = square1.getPixels()[i * square1.getWidth() + j];
-                      //  System.out.println((ySquare1 + i) * width + xSquare1 + j + "= " + square1.getPixels()[i * square1.getWidth() + j]);
                     //}
-                } catch (Exception ex) {
-                    //ex.printStackTrace();
-                    //System.out.println("IndexOutOfBounds Exception: " + ex.toString());
+                    try {
+                        //if ((ySquare1 + i) * height + j > height) {
+                        //     System.out.println("return because y is of out bounds");
+                        // }
+                        //if (j <= width*scale & i < (height*mainMenuBar.getSize().getWidth())*scale || j <= width*scale & i <= (-height * scale)) {
+                        pixels[(ySquare1 + i) * width + xSquare1 + j] = square1.getPixels()[i * square1.getWidth() + j];
+                        //  System.out.println((ySquare1 + i) * width + xSquare1 + j + "= " + square1.getPixels()[i * square1.getWidth() + j]);
+                        //}
+                    } catch (Exception ex) {
+                        //ex.printStackTrace();
+                        //System.out.println("IndexOutOfBounds Exception: " + ex.toString());
+                    }
                 }
             }
         }
@@ -530,23 +535,33 @@ public class Graphics extends Canvas implements Runnable {
 
         @Override
         public void keyPressed(KeyEvent keyEvent) {
+            if (firstTime) {
+                square1 = new Sprite(16,16,0xFF00FF);
+                firstTime = false;
+            }
             if (keyEvent.getKeyChar()=='a') {
-                vxSquare1 = -5;
+                //vxSquare1 = -5;
+                xSquare1 -= 5;
             } else if (keyEvent.getKeyChar()=='d') {
-                vxSquare1 = 5;
+                //vxSquare1 = 5;
+                xSquare1 += 5;
             } else if (keyEvent.getKeyChar()=='w') {
-                vySquare1 = -5;
+                //vySquare1 = -5;
+                ySquare1 -= 5;
             } else if (keyEvent.getKeyChar()=='s') {
-                vySquare1 = 5;
+                //vySquare1 = 5;
+                ySquare1 += 5;
             }
         }
 
         @Override
         public void keyReleased(KeyEvent keyEvent) {
             if (keyEvent.getKeyChar()=='a' || keyEvent.getKeyChar()=='d') {
-                vxSquare1 = 0;
+                //vxSquare1 = 0;
+                //xSquare1 = 5;
             } else if (keyEvent.getKeyChar()=='w' || keyEvent.getKeyChar()=='s') {
-                vySquare1 = 0;
+                //vySquare1 = 0;
+                //ySquare1 = 5;
             }
         }
     }
@@ -558,6 +573,10 @@ public class Graphics extends Canvas implements Runnable {
             if (e.getY() > height*scale || e.getX() > width*scale) {
                 //System.out.println("return because x or y is out of bounds");
             } else {
+                if (firstTime) {
+                    square1 = new Sprite(16,16,0xFF00FF);
+                    firstTime = false;
+                }
                 xSquare1 = e.getX()/scale;
                 ySquare1 = e.getY()/scale;
             }
@@ -585,6 +604,10 @@ public class Graphics extends Canvas implements Runnable {
             if (mouseEvent.getY() > height*scale || mouseEvent.getX() > width*scale) {
                 //System.out.println("return because x or y is out of bounds");
             } else {
+                if (firstTime) {
+                    square1 = new Sprite(16,16,0xFF00FF);
+                    firstTime = false;
+                }
                 xSquare1 = mouseEvent.getX() / scale;
                 ySquare1 = mouseEvent.getY() / scale;
             }
