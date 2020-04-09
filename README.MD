@@ -5,9 +5,9 @@ Jag har tänkt göra ett ritprogram som ska fungera ungefär som paint. Huvudide
 
 # I vilken ordning
 
-Jag ska börja med kärnan dvs göra så att det går att rita med olika färger och att den delen fungerar (och jag måste fixa IndexOutOfBounds exception när man försöker rita utanför screen sizen).
+Jag ska börja med det viktiga det vill säga att göra så att det går att rita överallt med olika färger, även att man ska kunna spara image till fil och importa image.
 Efter det lägger jag till så att man kan rita med olika former
 Efter det så lägger jag till att man kan spara till fil, öppna fil, cleara ritytan.
 Efter det lägger jag till keylistener
 Efter det snyggar jag till programmet
-Ungefär så har jag tänkt.
+Ungefär i den ordningen har jag tänkt göra saker.
