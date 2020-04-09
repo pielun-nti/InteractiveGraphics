@@ -2,11 +2,15 @@ package pierre.graphics;
 
 import javax.imageio.ImageIO;
 import javax.swing.*;
+import javax.swing.filechooser.FileNameExtensionFilter;
 import java.awt.*;
 import java.awt.event.*;
 import java.awt.image.BufferedImage;
 import java.awt.image.BufferStrategy;
 import java.awt.image.DataBufferInt;
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.util.Date;
 
@@ -46,6 +50,8 @@ public class Graphics extends Canvas implements Runnable {
     private JMenu menuAbout;
     private JPanel mainPanel;
     private JMenuItem itemExitProgram;
+    private JMenuItem itemSaveImageAs;
+    private JMenuItem itemImportImage;
     private JMenuItem itemChangePaintColor;
     private JMenuItem itemAbout;
     private Font myFont;
@@ -113,6 +119,8 @@ public class Graphics extends Canvas implements Runnable {
         menuPreferences = new JMenu("Preferences");
         menuAbout = new JMenu("About");
         itemExitProgram = new JMenuItem("Exit program");
+        itemSaveImageAs = new JMenuItem("Save Image As");
+        itemImportImage = new JMenuItem("Import Image");
         itemChangePaintColor = new JMenuItem("Change Paint Color");
         itemAbout = new JMenuItem("About this program");
     }
@@ -122,24 +130,25 @@ public class Graphics extends Canvas implements Runnable {
      */
     private void addComponents() {
         menuFile.setFont(menuFont);
-        menuFile.setToolTipText("Click here to open file menu");
         menuFile.setIconTextGap(10);
         menuTools.setFont(menuFont);
-        menuTools.setToolTipText("Click here to open tools menu");
         menuTools.setIconTextGap(10);
         menuSettings.setFont(menuFont);
-        menuSettings.setToolTipText("Click here to open settings menu");
         menuSettings.setIconTextGap(10);
         menuPreferences.setFont(menuFont);
-        menuPreferences.setToolTipText("Click here to open preferences menu");
         menuPreferences.setIconTextGap(10);
         menuAbout.setFont(menuFont);
-        menuAbout.setToolTipText("Click here to open about menu");
         menuAbout.setIconTextGap(10);
         itemAbout.setFont(itemFont);
         itemExitProgram.setFont(itemFont);
         itemExitProgram.setToolTipText("Click here to exit the program");
         itemExitProgram.setIconTextGap(10);
+        itemSaveImageAs.setFont(itemFont);
+        itemImportImage.setFont(itemFont);
+        itemImportImage.setIconTextGap(10);
+        itemImportImage.setToolTipText("Import image");
+        itemSaveImageAs.setIconTextGap(10);
+        itemSaveImageAs.setToolTipText("Save image as");
         itemAbout.setToolTipText("Click here to view information about this program");
         itemAbout.setIconTextGap(10);
         itemExitProgram.setIconTextGap(10);
@@ -147,6 +156,8 @@ public class Graphics extends Canvas implements Runnable {
         itemChangePaintColor.setToolTipText("Click here to change paint color");
         itemChangePaintColor.setIconTextGap(10);
         menuFile.add(itemExitProgram);
+        menuFile.add(itemImportImage);
+        menuFile.add(itemSaveImageAs);
         menuPreferences.add(itemChangePaintColor);
         menuAbout.add(itemAbout);
         mainMenuBar.add(menuFile);
@@ -162,6 +173,56 @@ public class Graphics extends Canvas implements Runnable {
     private void initActionPerformed() {
         itemExitProgram.addActionListener(actionEvent -> {
             confirmExitDialog();
+        });
+        itemSaveImageAs.addActionListener(actionEvent -> {
+            final JFileChooser saveAsFileChooser = new JFileChooser();
+            saveAsFileChooser.setCurrentDirectory(new File(System.getProperty("user.dir")));
+            saveAsFileChooser.setApproveButtonText("Save");
+            //saveAsFileChooser.addChoosableFileFilter(new FileNameExtensionFilter("Jpeg File", "jpg"));
+            saveAsFileChooser.addChoosableFileFilter(new FileNameExtensionFilter("Png file", "png"));
+            saveAsFileChooser.setFileFilter(new FileNameExtensionFilter("Jpeg File", "jpg"));
+            int actionDialog = saveAsFileChooser.showOpenDialog(this);
+            if (actionDialog != JFileChooser.APPROVE_OPTION) {
+                return;
+            }
+            File file = saveAsFileChooser.getSelectedFile();
+            if (!file.getName().endsWith(".jpg") & (!file.getName().endsWith(".png"))) {
+                file = new File(file.getAbsolutePath() + ".jpg");
+            }
+
+            try {
+                ImageIO.write(image, "jpg", file);
+                JOptionPane.showMessageDialog(null, "Image saved successfully!", ProgramTitle, JOptionPane.INFORMATION_MESSAGE);
+            } catch (Exception ex) {
+                JOptionPane.showMessageDialog(null, "Error saving image to file: " + ex.toString(), ProgramTitle, JOptionPane.INFORMATION_MESSAGE);
+                ex.printStackTrace();
+            }
+
+        });
+        itemImportImage.addActionListener(actionEvent -> {
+            //Need to fix so when i import it i can still paint on it
+            final JFileChooser openFileChooser = new JFileChooser();
+            openFileChooser.setCurrentDirectory(new File(System.getProperty("user.dir")));
+            openFileChooser.setApproveButtonText("Import");
+            //saveAsFileChooser.addChoosableFileFilter(new FileNameExtensionFilter("Jpeg File", "jpg"));
+            openFileChooser.addChoosableFileFilter(new FileNameExtensionFilter("Png file", "png"));
+            openFileChooser.setFileFilter(new FileNameExtensionFilter("Jpeg File", "jpg"));
+            int actionDialog = openFileChooser.showOpenDialog(this);
+            if (actionDialog != JFileChooser.APPROVE_OPTION) {
+                return;
+            }
+            File file = openFileChooser.getSelectedFile();
+            if (!file.getName().endsWith(".jpg") & (!file.getName().endsWith(".png"))) {
+                file = new File(file.getAbsolutePath() + ".jpg");
+            }
+
+            try {
+                image = ImageIO.read(file);
+                JOptionPane.showMessageDialog(null, "Image imported successfully!", ProgramTitle, JOptionPane.INFORMATION_MESSAGE);
+            } catch (Exception ex) {
+                JOptionPane.showMessageDialog(null, "Error importing image: " + ex.toString(), ProgramTitle, JOptionPane.INFORMATION_MESSAGE);
+                ex.printStackTrace();
+            }
         });
         itemAbout.addActionListener(actionEvent -> {
             JPanel jp = new JPanel();
@@ -399,7 +460,21 @@ public class Graphics extends Canvas implements Runnable {
 
         for (int i = 0 ; i < square1.getHeight() ; i++) {
             for (int j = 0 ; j < square1.getWidth() ; j++) {
-                pixels[(ySquare1+i)*width + xSquare1+j] = square1.getPixels()[i*square1.getWidth()+j];
+               // if ((ySquare1+i)* * width <= (width * scale) & (xSquare1+)) {
+
+                //}
+                try {
+                    //if ((ySquare1 + i) * height + j > height) {
+                   //     System.out.println("return because y is of out bounds");
+                   // }
+                    //if (j <= width*scale & i < (height*mainMenuBar.getSize().getWidth())*scale || j <= width*scale & i <= (-height * scale)) {
+                        pixels[(ySquare1 + i) * width + xSquare1 + j] = square1.getPixels()[i * square1.getWidth() + j];
+                      //  System.out.println((ySquare1 + i) * width + xSquare1 + j + "= " + square1.getPixels()[i * square1.getWidth() + j]);
+                    //}
+                } catch (Exception ex) {
+                    //ex.printStackTrace();
+                    //System.out.println("IndexOutOfBounds Exception: " + ex.toString());
+                }
             }
         }
 
@@ -480,10 +555,19 @@ public class Graphics extends Canvas implements Runnable {
 
         @Override
         public void mouseDragged(MouseEvent e) {
-            if (e.getX() <= width*scale && e.getY() <= height*scale) {
-                xSquare1 = e.getX()/scale-(square1.getWidth()/2);
-                ySquare1 = e.getY()/scale-(square1.getHeight()/2);
+            if (e.getY() > height*scale || e.getX() > width*scale) {
+                //System.out.println("return because x or y is out of bounds");
+            } else {
+                xSquare1 = e.getX()/scale;
+                ySquare1 = e.getY()/scale;
             }
+            //if (e.getX() <= width*scale && e.getY() <= height*scale) {
+            //System.out.println("h: " + mainMenuBar.getSize().getHeight() + " w: " + mainMenuBar.getSize().getWidth());
+            //if (e.getY() <= (height - mainMenuBar.getSize().getHeight())*scale & e.getX() <= ((width - 10) *scale)) {
+                //xSquare1 = e.getX()/scale-(square1.getWidth()/2);
+                //ySquare1 = e.getY()/scale-(square1.getHeight()/2);
+            //}
+
         }
 
         @Override
@@ -498,8 +582,12 @@ public class Graphics extends Canvas implements Runnable {
 
         @Override
         public void mousePressed(MouseEvent mouseEvent) {
-            xSquare2 = mouseEvent.getX()/scale;
-            ySquare2 = mouseEvent.getY()/scale;
+            if (mouseEvent.getY() > height*scale || mouseEvent.getX() > width*scale) {
+                //System.out.println("return because x or y is out of bounds");
+            } else {
+                xSquare1 = mouseEvent.getX() / scale;
+                ySquare1 = mouseEvent.getY() / scale;
+            }
         }
 
         @Override
