@@ -222,9 +222,10 @@ public class Graphics extends Canvas implements Runnable {
             final JFileChooser openFileChooser = new JFileChooser();
             openFileChooser.setCurrentDirectory(new File(System.getProperty("user.dir")));
             openFileChooser.setApproveButtonText("Import");
-            //saveAsFileChooser.addChoosableFileFilter(new FileNameExtensionFilter("Jpeg File", "jpg"));
-            openFileChooser.addChoosableFileFilter(new FileNameExtensionFilter("Png file", "png"));
-            openFileChooser.setFileFilter(new FileNameExtensionFilter("Jpeg File", "jpg"));
+            openFileChooser.addChoosableFileFilter(new FileNameExtensionFilter("Jpeg File", "jpg"));
+            //openFileChooser.addChoosableFileFilter(new FileNameExtensionFilter("Png file", "png"));
+            openFileChooser.setFileFilter(new FileNameExtensionFilter("Png file", "png"));
+            //Have png be the default because im pretty sure png has better quality (resolution) than than jpeg.
             int actionDialog = openFileChooser.showOpenDialog(this);
             if (actionDialog != JFileChooser.APPROVE_OPTION) {
                 return;
