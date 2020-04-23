@@ -70,6 +70,8 @@ public class Sprite {
         for (int i = 0 ; i < pixels.length ; i++) {
             pixels[i] = color;
         }
+        this.color = color;
+        System.out.println("Set Color to " + color);
     }
     public int getColor() {
         return color;

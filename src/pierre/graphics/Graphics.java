@@ -28,6 +28,7 @@ public class Graphics extends Canvas implements Runnable {
     private int height;
     private JFrame frame;
     private BufferedImage image;
+    private BufferedImage rawImage;
     private int[] pixels;
     private int scale;
     private Thread thread;
@@ -204,6 +205,7 @@ public class Graphics extends Canvas implements Runnable {
         });
         itemImportImage.addActionListener(actionEvent -> {
             //Need to fix so when i import it i can still paint on it
+            //Do this by transfering image to pixels
             final JFileChooser openFileChooser = new JFileChooser();
             openFileChooser.setCurrentDirectory(new File(System.getProperty("user.dir")));
             openFileChooser.setApproveButtonText("Import");
@@ -220,12 +222,40 @@ public class Graphics extends Canvas implements Runnable {
             }
 
             try {
-                image = ImageIO.read(file);
+                rawImage = ImageIO.read(file);
+                // Since the type of image is unknown it must be copied into an INT_RGB
+                image = new BufferedImage(rawImage.getWidth(), rawImage.getHeight(),
+                        BufferedImage.TYPE_INT_RGB);
+                image.getGraphics().drawImage(rawImage, 0, 0, null);
+                this.width = image.getWidth();
+                this.height = image.getHeight();
+                pixels = ((DataBufferInt) image.getRaster().getDataBuffer()).getData();
+                /*image = new BufferedImage(image.getWidth(), image.getHeight(),
+                        BufferedImage.TYPE_INT_RGB);
+                image.getGraphics().drawImage(image, 0, 0, null);*/
+                /*image = new BufferedImage(width, height, BufferedImage.TYPE_INT_RGB);
+                pixels = ((DataBufferInt) image.getRaster().getDataBuffer()).getData();*/
                 JOptionPane.showMessageDialog(null, "Image imported successfully!", ProgramTitle, JOptionPane.INFORMATION_MESSAGE);
             } catch (Exception ex) {
                 JOptionPane.showMessageDialog(null, "Error importing image: " + ex.toString(), ProgramTitle, JOptionPane.INFORMATION_MESSAGE);
                 ex.printStackTrace();
             }
+            /*
+            Something like this:
+                    BufferedImage image = null;
+        try {
+            BufferedImage rawImage = ImageIO.read(new File(path));
+            // Since the type of image is unknown it must be copied into an INT_RGB
+            image = new BufferedImage(rawImage.getWidth(), rawImage.getHeight(),
+                    BufferedImage.TYPE_INT_RGB);
+            image.getGraphics().drawImage(rawImage, 0, 0, null);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        this.width = image.getWidth();
+        this.height = image.getHeight();
+        pixels = ((DataBufferInt) image.getRaster().getDataBuffer()).getData();
+             */
         });
         itemAbout.addActionListener(actionEvent -> {
             JPanel jp = new JPanel();
@@ -247,16 +277,17 @@ public class Graphics extends Canvas implements Runnable {
             }
         });
         itemChangePaintColor.addActionListener(actionEvent -> {
+            if (!firstTime) {
                 JPanel jp = new JPanel();
                 jp.setLayout(new BorderLayout());
                 JLabel jl = new JLabel(
-                        "<html>Enter <font color=blue><b>Paint Color</font>:"
+                        "<html>Enter <font color=blue><b>Paint Color</font>:  (current: " + square1.getColor() + ")"
                                 + "</b><br><br></html>");
                 Font font = new Font("Arial", java.awt.Font.PLAIN, 14);
                 JTextField txt = new JTextField();
                 txt.setFocusable(true);
                 txt.setEditable(true);
-                txt.setToolTipText("Enter paint color here (current: " + square1.getColor());
+                txt.setToolTipText("Enter paint color here (current: " + square1.getColor() + ")");
                 txt.setSelectedTextColor(Color.RED);
                 txt.setForeground(Color.BLUE);
                 jl.setFont(font);
@@ -265,14 +296,14 @@ public class Graphics extends Canvas implements Runnable {
                 jp.add(txt);
                 txt.requestFocus();
                 if (JOptionPane.showConfirmDialog(this, jp, ProgramTitle,
-                        JOptionPane.OK_CANCEL_OPTION, JOptionPane.PLAIN_MESSAGE, new ImageIcon(resizedLogo))  == 0) {
+                        JOptionPane.OK_CANCEL_OPTION, JOptionPane.PLAIN_MESSAGE, new ImageIcon(resizedLogo)) == 0) {
                     if (txt != null) {
                         if (!txt.getText().trim().equals("")) {
                             //int color = (int) Long.parseLong(txt.getText(), 16);
                             //int color = Color.decode();
                             //int color = Integer.parseInt(txt.getText().trim().replaceFirst("^#",""), 16);
                             int color = Integer.parseInt(txt.getText().trim());
-                                square1.setColor(color);
+                            square1.setColor(color);
 
                         } else {
                             JOptionPane.showMessageDialog(null, "Color cannot be null!", ProgramTitle, JOptionPane.ERROR_MESSAGE);
@@ -280,11 +311,15 @@ public class Graphics extends Canvas implements Runnable {
                     } else {
                         JOptionPane.showMessageDialog(null, "Invalid color integer!", ProgramTitle, JOptionPane.ERROR_MESSAGE);
                     }
-                }
-                else {
+                } else {
                     System.out.println("Input Cancelled");
                 }
+            } else {
+                JOptionPane.showMessageDialog(null, "You haven't clicked with the mouse yet so the color is not set yet!", ProgramTitle, JOptionPane.ERROR_MESSAGE);
+            }
         });
+        //Add item for paint color list guide (int -> color name/hexcolor code)
+        //or else if statements
     }
 
 
