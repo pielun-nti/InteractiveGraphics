@@ -1,5 +1,14 @@
 # InteractiveGraphics
 
+# Lektion 23-04-2020
+Fixat så att man kan rita på importade bilder, 
+fixat så man kan ändra färg på det man ska rita, 
+fixade så att programmet har en config som kommer ihåg tex vilken färg man hade innan avsluta.
+Nästa lektion så ska jag lägga till fler menuitems bland annat erase, clear, mer. 
+Ska även lägga till fler saker i config, och mer som jag har planerat.
+T. ex. Config och sånt har jag haft i mina andra privata program så jag kopierade bara över det
+och ändrade på det jag behövde ändra på.
+
 # Planering
 Jag har tänkt göra ett ritprogram som ha liknande funktioner som paint och/eller andra ritprogram. 
 Huvudiden är att det ska gå att rita med olika färger och att man ska kunna spara det till en image och öppna som en image. 
@@ -8,7 +17,6 @@ Man ska också kunna "cleara" allt det man ritat och man ska kunna sudda med hj�
 Sen tänker jag kanske också till så att man kan skapa trianglar och rektanglar och att man kan rita med tangentbordet via en keylistener. 
 
 # I vilken ordning
-
 Jag ska börja med det viktiga det vill säga att göra så att det går att rita överallt med olika färger, även att man ska kunna spara image till fil och importa image.
 Efter det så lägger jag till att man kan spara bild till fil, importa bild, cleara ritytan.
 Efter det lägger jag till keylistener
