@@ -8,11 +8,11 @@ import java.awt.event.*;
 import java.awt.image.BufferedImage;
 import java.awt.image.BufferStrategy;
 import java.awt.image.DataBufferInt;
-import java.io.BufferedWriter;
-import java.io.File;
-import java.io.FileWriter;
-import java.io.IOException;
+import java.io.*;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.Date;
+import java.util.stream.Stream;
 
 import static com.sun.java.accessibility.util.AWTEventMonitor.addWindowListener;
 
@@ -55,6 +55,8 @@ public class Graphics extends Canvas implements Runnable {
     private JMenuItem itemImportImage;
     private JMenuItem itemChangePaintSize;
     private JMenuItem itemChangePaintColor;
+    private JMenuItem itemSaveToConfig;
+    private JMenuItem itemResetConfigOverride;
     private JMenuItem itemAbout;
     private Font myFont;
     private static Font itemFont;
@@ -62,6 +64,12 @@ public class Graphics extends Canvas implements Runnable {
     private String ProgramTitle = "Graphics GUI";
     private static String programAuthor = "Pierre Lundström";
     private boolean firstTime = true;
+    public static String configFileName = "paintconfig.txt";
+    public static File config;
+    public static String paintCoreDir = "paintcore";
+    public static String paintLogsDir = "logs";
+    public static int defaultColor = 0xFF00FF;
+    private static boolean closeListener = false;
 
     /**
      * Constructor
@@ -82,7 +90,7 @@ public class Graphics extends Canvas implements Runnable {
         initListeners();
         initActionPerformed();
         initImages();
-        //runConfigCheck();
+        runConfigCheck();
         initKeystrokes();
         image = new BufferedImage(w, h, BufferedImage.TYPE_INT_RGB);
         pixels = ((DataBufferInt) image.getRaster().getDataBuffer()).getData();
@@ -98,16 +106,11 @@ public class Graphics extends Canvas implements Runnable {
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.pack();
         frame.setVisible(true);
-        //add menubar, like in paint programs
-        //fix indexoutofbounds exception
-        //add functions like change color, save as image
 
         this.addKeyListener(new MyKeyListener());
         this.addMouseMotionListener(new MyMouseMotionListener());
         this.addMouseListener(new MyMouseListener());
         this.requestFocus();
-        //square1 = new Sprite(16,16,0xFF00FF);
-        //Sprite sprite = new Sprite(true);
     }
 
     /**
@@ -126,6 +129,8 @@ public class Graphics extends Canvas implements Runnable {
         itemSaveImageAs = new JMenuItem("Save Image As");
         itemImportImage = new JMenuItem("Import Image");
         itemChangePaintColor = new JMenuItem("Change Paint Color");
+        itemSaveToConfig = new JMenuItem("Save Current Session To Config");
+        itemResetConfigOverride = new JMenuItem("Reset Config");
         itemAbout = new JMenuItem("About this program");
     }
 
@@ -159,9 +164,17 @@ public class Graphics extends Canvas implements Runnable {
         itemChangePaintColor.setFont(itemFont);
         itemChangePaintColor.setToolTipText("Click here to change paint color");
         itemChangePaintColor.setIconTextGap(10);
+        itemSaveToConfig.setToolTipText("Click here to save current variables to config");
+        itemSaveToConfig.setIconTextGap(10);
+        itemSaveToConfig.setFont(itemFont);
+        itemResetConfigOverride.setFont(itemFont);
+        itemResetConfigOverride.setIconTextGap(10);
+        itemResetConfigOverride.setToolTipText("Click here to reset current config");
         menuFile.add(itemExitProgram);
         menuFile.add(itemImportImage);
         menuFile.add(itemSaveImageAs);
+        menuFile.add(itemSaveToConfig);
+        menuFile.add(itemResetConfigOverride);
         menuPreferences.add(itemChangePaintColor);
         menuAbout.add(itemAbout);
         mainMenuBar.add(menuFile);
@@ -318,10 +331,134 @@ public class Graphics extends Canvas implements Runnable {
                 JOptionPane.showMessageDialog(null, "You haven't clicked with the mouse yet so the color is not set yet!", ProgramTitle, JOptionPane.ERROR_MESSAGE);
             }
         });
+        itemSaveToConfig.addActionListener(actionEvent -> {
+            closeListener = false;
+            saveToConfig();
+        });
+        itemResetConfigOverride.addActionListener(actionEvent -> {
+            resetConfigOverride();
+        });
+
         //Add item for paint color list guide (int -> color name/hexcolor code)
         //or else if statements
+        //Add item for save to config, add save to close listener
+        //Add item for reset config override
+        //Actually for erasing I just need to pick black color then it erases it because the background is black by default, can add item for that later
     }
 
+    /**
+     * Reads data from config
+     * and sometimes writes to config
+     */
+    private void runConfigCheck() {
+        File core = new File(paintCoreDir);
+        if (!core.exists()) {
+            core.mkdirs();
+        }
+        File logs = new File(paintLogsDir);
+        if (!logs.exists()) {
+            logs.mkdirs();
+        }
+        config = new File(System.getProperty("user.dir") + "/" + paintCoreDir + "/" + configFileName);
+        boolean empty = !config.exists() || config.length() == 0;
+        resetConfigIfEmpty();
+
+        //Also if not empty file read from config and add port and ip to variables from config
+        if (!empty) {
+            //Read config and add to variables
+            try (Stream<String> all_lines = Files.lines(Paths.get(System.getProperty("user.dir") + "/" + paintCoreDir + "/" + configFileName))) {
+                String program_title = all_lines.skip(2).findFirst().get().substring(16);
+                String paint_color = Files.readAllLines(Paths.get(System.getProperty("user.dir") + "/" + paintCoreDir + "/" + configFileName)).get(3).substring(14);
+                ProgramTitle = program_title;
+                if (firstTime) {
+                    //I had to create new sprite because otherwise square1 is null and I can't set color
+                    //anyways now it keeps the color from the previous time application was opened
+                    square1 = new Sprite(16,16, Integer.parseInt(paint_color));
+                    firstTime = false;
+                } else {
+                    square1.setColor(Integer.parseInt(paint_color));
+                }
+                System.out.println("Running config check...");
+                System.out.println("Program Title: " + ProgramTitle);
+                System.out.println("Paint Color: " + paint_color);
+
+            }       catch (IOException ex) {
+                JOptionPane.showMessageDialog(this, "Couldnt read file " + configFileName + "!", ProgramTitle, JOptionPane.ERROR_MESSAGE);
+                resetConfigOverride();
+                ex.printStackTrace();
+            }
+        }
+    }
+
+
+    /**
+     * Resets config to default values if empty
+     */
+    public void resetConfigIfEmpty() {
+        config = new File(System.getProperty("user.dir") + "/" + paintCoreDir + "/" + configFileName);
+        boolean empty = !config.exists() || config.length() == 0;
+        try {
+            if (empty) {
+                PrintWriter writer = new PrintWriter(config);
+                writer.println("# Created config file at " + new Date(System.currentTimeMillis()));
+                writer.println("# Copyright @ " + programAuthor);
+                writer.println("program_title = " + ProgramTitle);
+                /*if (square1 != null) {
+                    writer.println("paint_color = " + square1.getColor());
+                } else {*/
+                    writer.println("paint_color = " + defaultColor);
+               // }
+                writer.close();
+            }
+        } catch (FileNotFoundException ex) {
+            JOptionPane.showMessageDialog(this, "Couldnt find file " + configFileName + "!", ProgramTitle, JOptionPane.ERROR_MESSAGE);
+            ex.printStackTrace();
+        }
+    }
+
+    /**
+     * A method for resetting config to default values even if it's not empty
+     */
+    public void resetConfigOverride() {
+        config = new File(System.getProperty("user.dir") + "/" + paintCoreDir + "/" + configFileName);
+//boolean empty = !config.exists() || config.length() == 0;
+        try {
+//            if (empty) {
+            PrintWriter writer = new PrintWriter(config);
+            writer.println("# Created config file at " + new Date(System.currentTimeMillis()));
+            writer.println("# Copyright @ " + programAuthor);
+            writer.println("program_title = " + ProgramTitle);
+            writer.println("paint_color = " + defaultColor);
+            writer.close();
+            JOptionPane.showMessageDialog(this, "Successfully resetted config", ProgramTitle, JOptionPane.INFORMATION_MESSAGE);
+        } catch (FileNotFoundException ex) {
+            JOptionPane.showMessageDialog(this, "Couldnt find file " + configFileName + "!", ProgramTitle, JOptionPane.ERROR_MESSAGE);
+            ex.printStackTrace();
+        }
+    }
+
+    /**
+     * Save variables to config
+     */
+    public void saveToConfig() {
+        config = new File(System.getProperty("user.dir") + "/" + paintCoreDir + "/" + configFileName);
+//boolean empty = !config.exists() || config.length() == 0;
+        try {
+//            if (empty) {
+            PrintWriter writer = new PrintWriter(config);
+            writer.println("# Created config file at " + new Date(System.currentTimeMillis()));
+            writer.println("# Copyright @ " + programAuthor);
+            writer.println("program_title = " + ProgramTitle);
+            writer.println("paint_color = " + square1.getColor());
+            writer.close();
+            if (!closeListener) {
+                JOptionPane.showMessageDialog(this, "Successfully saved to config", ProgramTitle, JOptionPane.INFORMATION_MESSAGE);
+            }
+        } catch (FileNotFoundException ex) {
+            JOptionPane.showMessageDialog(this, "Couldnt find file " + configFileName + "!", ProgramTitle, JOptionPane.ERROR_MESSAGE);
+            ex.printStackTrace();
+        }
+    }
 
 
     /**
@@ -412,7 +549,7 @@ public class Graphics extends Canvas implements Runnable {
      * Initializes Listeners
      */
     private void initListeners() {
-        addWindowListener(new WindowAdapter() {
+        frame.addWindowListener(new WindowAdapter() {
             @Override
             public void windowClosing(WindowEvent we)
             {
@@ -421,10 +558,13 @@ public class Graphics extends Canvas implements Runnable {
                 if(PromptResult==JOptionPane.YES_OPTION)
                 {
                     //frame.dispose();
+                    closeListener = true;
+                    saveToConfig();
                     System.exit(0);
                 }
             }
         });
+
     }
     /**
      * Confirm exit method
@@ -639,10 +779,10 @@ public class Graphics extends Canvas implements Runnable {
             if (mouseEvent.getY() > height*scale || mouseEvent.getX() > width*scale) {
                 //System.out.println("return because x or y is out of bounds");
             } else {
-                if (firstTime) {
-                    square1 = new Sprite(16,16,0xFF00FF);
+                /*if (firstTime) {
+                    square1 = new Sprite(16,16,defaultColor);
                     firstTime = false;
-                }
+                }*/
                 xSquare1 = mouseEvent.getX() / scale;
                 ySquare1 = mouseEvent.getY() / scale;
             }
