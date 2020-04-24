@@ -71,8 +71,26 @@ public class Sprite {
             pixels[i] = color;
         }
         this.color = color;
+        Graphics.colorBeforeErase = color;
         System.out.println("Set Color to " + color);
     }
+
+    public void setWidth(int w) {
+        this.width = w;
+    }
+
+    public  void setHeight(int h) {
+        this.height = h;
+    }
+
+    public void setEraseColor(int color) {
+        for (int i = 0 ; i < pixels.length ; i++) {
+            pixels[i] = color;
+        }
+        this.color = color;
+        System.out.println("Set Erase Color to " + color);
+    }
+
     public int getColor() {
         return color;
     }

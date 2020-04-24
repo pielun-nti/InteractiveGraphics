@@ -55,8 +55,10 @@ public class Graphics extends Canvas implements Runnable {
     private JMenuItem itemImportImage;
     private JMenuItem itemChangePaintSize;
     private JMenuItem itemChangePaintColor;
+    private JMenuItem itemClearAllPaintColor;
     private JMenuItem itemSaveToConfig;
     private JMenuItem itemResetConfigOverride;
+    private JCheckBoxMenuItem itemErasePaint;
     private JMenuItem itemAbout;
     private Font myFont;
     private static Font itemFont;
@@ -70,6 +72,9 @@ public class Graphics extends Canvas implements Runnable {
     public static String paintLogsDir = "logs";
     public static int defaultColor = 0xFF00FF;
     private static boolean closeListener = false;
+    public static int colorBeforeErase;
+    public static int defaultPaintWidth = 16;
+    public static int defaultPaintHeight = 16;
 
     /**
      * Constructor
@@ -131,6 +136,8 @@ public class Graphics extends Canvas implements Runnable {
         itemChangePaintColor = new JMenuItem("Change Paint Color");
         itemSaveToConfig = new JMenuItem("Save Current Session To Config");
         itemResetConfigOverride = new JMenuItem("Reset Config");
+        itemErasePaint = new JCheckBoxMenuItem("Erase Paint");
+        itemChangePaintSize = new JMenuItem("Change Paint Size");
         itemAbout = new JMenuItem("About this program");
     }
 
@@ -164,6 +171,12 @@ public class Graphics extends Canvas implements Runnable {
         itemChangePaintColor.setFont(itemFont);
         itemChangePaintColor.setToolTipText("Click here to change paint color");
         itemChangePaintColor.setIconTextGap(10);
+        itemErasePaint.setFont(itemFont);
+        itemErasePaint.setToolTipText("Click here to start erasing paint");
+        itemErasePaint.setIconTextGap(10);
+        itemChangePaintSize.setFont(itemFont);
+        itemChangePaintSize.setToolTipText("Click here to change paint size");
+        itemChangePaintSize.setIconTextGap(10);
         itemSaveToConfig.setToolTipText("Click here to save current variables to config");
         itemSaveToConfig.setIconTextGap(10);
         itemSaveToConfig.setFont(itemFont);
@@ -175,7 +188,9 @@ public class Graphics extends Canvas implements Runnable {
         menuFile.add(itemSaveImageAs);
         menuFile.add(itemSaveToConfig);
         menuFile.add(itemResetConfigOverride);
-        menuPreferences.add(itemChangePaintColor);
+        menuSettings.add(itemChangePaintColor);
+        menuSettings.add(itemErasePaint);
+        menuSettings.add(itemChangePaintSize);
         menuAbout.add(itemAbout);
         mainMenuBar.add(menuFile);
         mainMenuBar.add(menuTools);
@@ -318,6 +333,7 @@ public class Graphics extends Canvas implements Runnable {
                             //int color = Integer.parseInt(txt.getText().trim().replaceFirst("^#",""), 16);
                             int color = Integer.parseInt(txt.getText().trim());
                             square1.setColor(color);
+                            Graphics.colorBeforeErase = color;
 
                         } else {
                             JOptionPane.showMessageDialog(null, "Color cannot be null!", ProgramTitle, JOptionPane.ERROR_MESSAGE);
@@ -339,12 +355,77 @@ public class Graphics extends Canvas implements Runnable {
         itemResetConfigOverride.addActionListener(actionEvent -> {
             resetConfigOverride();
         });
+        itemErasePaint.addActionListener(actionEvent -> {
+            if (itemErasePaint.isSelected()) {
+                square1.setEraseColor(00000000);
+                itemErasePaint.setToolTipText("Click here to stop erasing paint");
+            } else {
+                if (colorBeforeErase != 0) {
+                    square1.setColor(colorBeforeErase);
+                } else {
+                    square1.setColor(defaultColor);
+                }
+                itemErasePaint.setToolTipText("Click here to start erasing paint");
+            }
+        });
+        itemChangePaintSize.addActionListener(actionEvent -> {
+            JPanel jp = new JPanel();
+            jp.setLayout(new BorderLayout());
+            JLabel jl = new JLabel(
+                    "<html>Enter <font color=blue><b>Paint Size</font>:  (current: " + square1.getWidth() + "x" + square1.getHeight() + ")"
+                            + "</b><br><br></html>");
+            Font font = new Font("Arial", java.awt.Font.PLAIN, 14);
+            JTextField width = new JTextField();
+            JTextField height = new JTextField();
+            width.setFocusable(true);
+            width.setEditable(true);
+            width.setToolTipText("Enter paint width size (current: " + square1.getWidth() + ")");
+            width.setSelectedTextColor(Color.RED);
+            width.setForeground(Color.BLUE);
+            height.setFocusable(true);
+            height.setEditable(true);
+            height.setToolTipText("Enter paint height size (current: " + square1.getHeight() + ")");
+            height.setSelectedTextColor(Color.RED);
+            height.setForeground(Color.BLUE);
+            jl.setFont(font);
+            width.setFont(font);
+            height.setFont(font);
+            jp.add(jl, BorderLayout.NORTH);
+            jp.add(width, BorderLayout.CENTER);
+            jp.add(height, BorderLayout.SOUTH);
+            width.requestFocus();
+            if (JOptionPane.showConfirmDialog(this, jp, ProgramTitle,
+                    JOptionPane.OK_CANCEL_OPTION, JOptionPane.PLAIN_MESSAGE, new ImageIcon(resizedLogo)) == 0) {
+                if (width != null & height != null) {
+                    if (!width.getText().trim().equals("") & !height.getText().trim().equals("")) {
+                        int widthi = Integer.parseInt(width.getText().trim());
+                        int heighti = Integer.parseInt(height.getText().trim());
+                        if (!firstTime) {
+                            square1 = new Sprite(widthi,heighti, square1.getColor());
+                        } else {
+                            square1 = new Sprite(widthi,heighti, square1.getColor());
+                        }
+
+                    } else {
+                        JOptionPane.showMessageDialog(null, "Size cannot be null!", ProgramTitle, JOptionPane.ERROR_MESSAGE);
+                    }
+                } else {
+                    JOptionPane.showMessageDialog(null, "Invalid width or height integer!", ProgramTitle, JOptionPane.ERROR_MESSAGE);
+                }
+            } else {
+                System.out.println("Input Cancelled");
+            }
+        });
 
         //Add item for paint color list guide (int -> color name/hexcolor code)
         //or else if statements
         //Add item for save to config, add save to close listener
         //Add item for reset config override
         //Actually for erasing I just need to pick black color then it erases it because the background is black by default, can add item for that later
+        //Add item for changing paint size (just remove the sprite then recreate one with bigger width, height
+        //Add item for clearing all paint (just make all pixels black, or recreate image)
+        //Add item for changing background color instead of black to something else (and then I have to check if its black or not later on)
+        //Add item for changing scale
     }
 
     /**
@@ -370,20 +451,31 @@ public class Graphics extends Canvas implements Runnable {
             try (Stream<String> all_lines = Files.lines(Paths.get(System.getProperty("user.dir") + "/" + paintCoreDir + "/" + configFileName))) {
                 String program_title = all_lines.skip(2).findFirst().get().substring(16);
                 String paint_color = Files.readAllLines(Paths.get(System.getProperty("user.dir") + "/" + paintCoreDir + "/" + configFileName)).get(3).substring(14);
+                String paint_width = Files.readAllLines(Paths.get(System.getProperty("user.dir") + "/" + paintCoreDir + "/" + configFileName)).get(4).substring(14);
+                String paint_height = Files.readAllLines(Paths.get(System.getProperty("user.dir") + "/" + paintCoreDir + "/" + configFileName)).get(5).substring(15);
                 ProgramTitle = program_title;
                 if (firstTime) {
                     //I had to create new sprite because otherwise square1 is null and I can't set color
                     //anyways now it keeps the color from the previous time application was opened
-                    square1 = new Sprite(16,16, Integer.parseInt(paint_color));
+                    square1 = new Sprite(Integer.parseInt(paint_width),Integer.parseInt(paint_height), Integer.parseInt(paint_color));
+                    Graphics.colorBeforeErase = Integer.parseInt(paint_color);
                     firstTime = false;
                 } else {
+                    square1.setWidth(Integer.parseInt(paint_width));
+                    square1.setHeight(Integer.parseInt(paint_height));
                     square1.setColor(Integer.parseInt(paint_color));
+                    Graphics.colorBeforeErase = Integer.parseInt(paint_color);
+                }
+                if (square1.getColor() == 00000000) {
+                    itemErasePaint.setSelected(true);
                 }
                 System.out.println("Running config check...");
                 System.out.println("Program Title: " + ProgramTitle);
                 System.out.println("Paint Color: " + paint_color);
+                System.out.println("Paint Width: " + paint_height);
+                System.out.println("Paint Height: " + paint_width);
 
-            }       catch (IOException ex) {
+            }       catch (Exception ex) {
                 JOptionPane.showMessageDialog(this, "Couldnt read file " + configFileName + "!", ProgramTitle, JOptionPane.ERROR_MESSAGE);
                 resetConfigOverride();
                 ex.printStackTrace();
@@ -404,11 +496,9 @@ public class Graphics extends Canvas implements Runnable {
                 writer.println("# Created config file at " + new Date(System.currentTimeMillis()));
                 writer.println("# Copyright @ " + programAuthor);
                 writer.println("program_title = " + ProgramTitle);
-                /*if (square1 != null) {
-                    writer.println("paint_color = " + square1.getColor());
-                } else {*/
-                    writer.println("paint_color = " + defaultColor);
-               // }
+                writer.println("paint_color = " + defaultColor);
+                writer.println("paint_width = " + defaultPaintWidth);
+                writer.println("paint_height = " + defaultPaintHeight);
                 writer.close();
             }
         } catch (FileNotFoundException ex) {
@@ -430,11 +520,16 @@ public class Graphics extends Canvas implements Runnable {
             writer.println("# Copyright @ " + programAuthor);
             writer.println("program_title = " + ProgramTitle);
             writer.println("paint_color = " + defaultColor);
+            writer.println("paint_width = " + defaultPaintWidth);
+            writer.println("paint_height = " + defaultPaintHeight);
             writer.close();
             JOptionPane.showMessageDialog(this, "Successfully resetted config", ProgramTitle, JOptionPane.INFORMATION_MESSAGE);
         } catch (FileNotFoundException ex) {
             JOptionPane.showMessageDialog(this, "Couldnt find file " + configFileName + "!", ProgramTitle, JOptionPane.ERROR_MESSAGE);
             ex.printStackTrace();
+        }
+        if (square1 != null) {
+            square1.setColor(defaultColor);
         }
     }
 

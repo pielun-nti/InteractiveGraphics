@@ -1,4 +1,6 @@
-# Created config file at Thu Apr 23 11:11:48 CEST 2020
+# Created config file at Fri Apr 24 11:16:52 CEST 2020
 # Copyright @ Pierre Lundström
 program_title = Graphics GUI
 paint_color = 16711935
+paint_width = 16
+paint_height = 16

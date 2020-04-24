@@ -9,6 +9,10 @@ Ska även lägga till fler saker i config, och mer som jag har planerat.
 T. ex. Config och sånt har jag haft i mina andra privata program så jag kopierade bara över det
 och ändrade på det jag behövde ändra på.
 
+# Lektion 24-04-2020
+Jag har lagt till erase funktion och change paint size funktion, 
+men ska fortsätta på change paint size funktionen nästa lektion. 
+
 # Planering
 Jag har tänkt göra ett ritprogram som ha liknande funktioner som paint och/eller andra ritprogram. 
 Huvudiden är att det ska gå att rita med olika färger och att man ska kunna spara det till en image och öppna som en image. 
