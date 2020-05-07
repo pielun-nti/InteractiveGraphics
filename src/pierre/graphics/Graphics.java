@@ -34,7 +34,7 @@ public class Graphics extends Canvas implements Runnable {
     private Thread thread;
     private boolean running = false;
     private int fps = 60;
-    private int ups = 30;
+    private int ups = 60;
     private Sprite square1;
     private double t=0;
     private int xSquare1 = 0;
@@ -59,6 +59,11 @@ public class Graphics extends Canvas implements Runnable {
     private JMenuItem itemSaveToConfig;
     private JMenuItem itemResetConfigOverride;
     private JCheckBoxMenuItem itemErasePaint;
+    private JMenuItem itemCreateNewDrawboard;
+    private JMenuItem itemChangeFPS;
+    private JMenuItem itemChangeUpdates;
+    private JMenuItem itemChangeScale;
+    private JMenuItem itemChangeBackgroundColor;
     private JMenuItem itemAbout;
     private Font myFont;
     private static Font itemFont;
@@ -75,6 +80,7 @@ public class Graphics extends Canvas implements Runnable {
     public static int colorBeforeErase;
     public static int defaultPaintWidth = 16;
     public static int defaultPaintHeight = 16;
+    public static int defaultBackgroundColor = 0xFFFFFF;
 
     /**
      * Constructor
@@ -99,6 +105,11 @@ public class Graphics extends Canvas implements Runnable {
         initKeystrokes();
         image = new BufferedImage(w, h, BufferedImage.TYPE_INT_RGB);
         pixels = ((DataBufferInt) image.getRaster().getDataBuffer()).getData();
+        image = new BufferedImage(width, height, BufferedImage.TYPE_INT_RGB);
+        pixels = ((DataBufferInt) image.getRaster().getDataBuffer()).getData();
+        for (int i = 0 ; i < pixels.length ; i++) {
+            pixels[i] = defaultBackgroundColor; //nu vit bakgrund
+        }
         Dimension size = new Dimension(scale*width, scale*height);
         frame.setJMenuBar(mainMenuBar);
         frame.setSize(size);
@@ -138,6 +149,11 @@ public class Graphics extends Canvas implements Runnable {
         itemResetConfigOverride = new JMenuItem("Reset Config");
         itemErasePaint = new JCheckBoxMenuItem("Erase Paint");
         itemChangePaintSize = new JMenuItem("Change Paint Size");
+        itemCreateNewDrawboard = new JMenuItem("Create New Draw Board");
+        itemChangeScale = new JMenuItem("Change Scale");
+        itemChangeFPS = new JMenuItem("Change Frames Per Seconds");
+        itemChangeUpdates = new JMenuItem("Change Updates Per Seconds");
+        itemChangeBackgroundColor = new JMenuItem("Change Background Color");
         itemAbout = new JMenuItem("About this program");
     }
 
@@ -183,7 +199,23 @@ public class Graphics extends Canvas implements Runnable {
         itemResetConfigOverride.setFont(itemFont);
         itemResetConfigOverride.setIconTextGap(10);
         itemResetConfigOverride.setToolTipText("Click here to reset current config");
+        itemCreateNewDrawboard.setFont(itemFont);
+        itemCreateNewDrawboard.setIconTextGap(10);
+        itemCreateNewDrawboard.setToolTipText("Click here to create a new draw board");
+        itemChangeScale.setFont(itemFont);
+        itemChangeScale.setIconTextGap(10);
+        itemChangeScale.setToolTipText("Click here to change the scale");
+        itemChangeFPS.setFont(itemFont);
+        itemChangeFPS.setIconTextGap(10);
+        itemChangeFPS.setToolTipText("Click here to change the fps");
+        itemChangeUpdates.setFont(itemFont);
+        itemChangeUpdates.setIconTextGap(10);
+        itemChangeUpdates.setToolTipText("Click here to change the ups");
+        itemChangeBackgroundColor.setFont(itemFont);
+        itemChangeBackgroundColor.setIconTextGap(10);
+        itemChangeBackgroundColor.setToolTipText("Click here to change the background color");
         menuFile.add(itemExitProgram);
+        menuFile.add(itemCreateNewDrawboard);
         menuFile.add(itemImportImage);
         menuFile.add(itemSaveImageAs);
         menuFile.add(itemSaveToConfig);
@@ -191,6 +223,10 @@ public class Graphics extends Canvas implements Runnable {
         menuSettings.add(itemChangePaintColor);
         menuSettings.add(itemErasePaint);
         menuSettings.add(itemChangePaintSize);
+        menuSettings.add(itemChangeScale);
+        menuSettings.add(itemChangeFPS);
+        menuSettings.add(itemChangeUpdates);
+        menuSettings.add(itemChangeBackgroundColor);
         menuAbout.add(itemAbout);
         mainMenuBar.add(menuFile);
         mainMenuBar.add(menuTools);
@@ -210,7 +246,6 @@ public class Graphics extends Canvas implements Runnable {
             final JFileChooser saveAsFileChooser = new JFileChooser();
             saveAsFileChooser.setCurrentDirectory(new File(System.getProperty("user.dir")));
             saveAsFileChooser.setApproveButtonText("Save");
-            //saveAsFileChooser.addChoosableFileFilter(new FileNameExtensionFilter("Jpeg File", "jpg"));
             saveAsFileChooser.addChoosableFileFilter(new FileNameExtensionFilter("Png file", "png"));
             saveAsFileChooser.setFileFilter(new FileNameExtensionFilter("Jpeg File", "jpg"));
             int actionDialog = saveAsFileChooser.showOpenDialog(this);
@@ -240,7 +275,6 @@ public class Graphics extends Canvas implements Runnable {
             openFileChooser.addChoosableFileFilter(new FileNameExtensionFilter("Jpeg File", "jpg"));
             //openFileChooser.addChoosableFileFilter(new FileNameExtensionFilter("Png file", "png"));
             openFileChooser.setFileFilter(new FileNameExtensionFilter("Png file", "png"));
-            //Have png be the default because im pretty sure png has better quality (resolution) than than jpeg.
             int actionDialog = openFileChooser.showOpenDialog(this);
             if (actionDialog != JFileChooser.APPROVE_OPTION) {
                 return;
@@ -259,32 +293,11 @@ public class Graphics extends Canvas implements Runnable {
                 this.width = image.getWidth();
                 this.height = image.getHeight();
                 pixels = ((DataBufferInt) image.getRaster().getDataBuffer()).getData();
-                /*image = new BufferedImage(image.getWidth(), image.getHeight(),
-                        BufferedImage.TYPE_INT_RGB);
-                image.getGraphics().drawImage(image, 0, 0, null);*/
-                /*image = new BufferedImage(width, height, BufferedImage.TYPE_INT_RGB);
-                pixels = ((DataBufferInt) image.getRaster().getDataBuffer()).getData();*/
                 JOptionPane.showMessageDialog(null, "Image imported successfully!", ProgramTitle, JOptionPane.INFORMATION_MESSAGE);
             } catch (Exception ex) {
                 JOptionPane.showMessageDialog(null, "Error importing image: " + ex.toString(), ProgramTitle, JOptionPane.INFORMATION_MESSAGE);
                 ex.printStackTrace();
             }
-            /*
-            Something like this:
-                    BufferedImage image = null;
-        try {
-            BufferedImage rawImage = ImageIO.read(new File(path));
-            // Since the type of image is unknown it must be copied into an INT_RGB
-            image = new BufferedImage(rawImage.getWidth(), rawImage.getHeight(),
-                    BufferedImage.TYPE_INT_RGB);
-            image.getGraphics().drawImage(rawImage, 0, 0, null);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        this.width = image.getWidth();
-        this.height = image.getHeight();
-        pixels = ((DataBufferInt) image.getRaster().getDataBuffer()).getData();
-             */
         });
         itemAbout.addActionListener(actionEvent -> {
             JPanel jp = new JPanel();
@@ -328,9 +341,6 @@ public class Graphics extends Canvas implements Runnable {
                         JOptionPane.OK_CANCEL_OPTION, JOptionPane.PLAIN_MESSAGE, new ImageIcon(resizedLogo)) == 0) {
                     if (txt != null) {
                         if (!txt.getText().trim().equals("")) {
-                            //int color = (int) Long.parseLong(txt.getText(), 16);
-                            //int color = Color.decode();
-                            //int color = Integer.parseInt(txt.getText().trim().replaceFirst("^#",""), 16);
                             int color = Integer.parseInt(txt.getText().trim());
                             square1.setColor(color);
                             Graphics.colorBeforeErase = color;
@@ -416,16 +426,171 @@ public class Graphics extends Canvas implements Runnable {
                 System.out.println("Input Cancelled");
             }
         });
+        itemCreateNewDrawboard.addActionListener(actionEvent -> {
+            image = new BufferedImage(width, height, BufferedImage.TYPE_INT_RGB);
+            pixels = ((DataBufferInt) image.getRaster().getDataBuffer()).getData();
+            for (int i = 0 ; i < pixels.length ; i++) {
+                pixels[i] = defaultBackgroundColor; //nu vit bakgrund
+            }
+        });
+        itemChangeScale.addActionListener(actionEvent -> {
+            JPanel jp = new JPanel();
+            jp.setLayout(new BorderLayout());
+            JLabel jl = new JLabel(
+                    "<html>Enter <font color=blue><b>Scale</font>:  (current: " + scale + ")"
+                            + "</b><br><br></html>");
+            Font font = new Font("Arial", java.awt.Font.PLAIN, 14);
+            JTextField txt = new JTextField();
+            txt.setFocusable(true);
+            txt.setEditable(true);
+            txt.setToolTipText("Enter the scale in percentage here (current: " + scale + ")");
+            txt.setSelectedTextColor(Color.RED);
+            txt.setForeground(Color.BLUE);
+            jl.setFont(font);
+            txt.setFont(font);
+            jp.add(jl, BorderLayout.NORTH);
+            jp.add(txt);
+            txt.requestFocus();
+            if (JOptionPane.showConfirmDialog(this, jp, ProgramTitle,
+                    JOptionPane.OK_CANCEL_OPTION, JOptionPane.PLAIN_MESSAGE, new ImageIcon(resizedLogo)) == 0) {
+                if (txt != null) {
+                    if (!txt.getText().trim().equals("")) {
+                        scale = Integer.parseInt(txt.getText().trim());
 
+                    } else {
+                        JOptionPane.showMessageDialog(null, "Scale cannot be null!", ProgramTitle, JOptionPane.ERROR_MESSAGE);
+                    }
+                } else {
+                    JOptionPane.showMessageDialog(null, "Invalid scale integer!", ProgramTitle, JOptionPane.ERROR_MESSAGE);
+                }
+            } else {
+                System.out.println("Input Cancelled");
+            }
+        });
+        itemChangeFPS.addActionListener(actionEvent -> {
+            JPanel jp = new JPanel();
+            jp.setLayout(new BorderLayout());
+            JLabel jl = new JLabel(
+                    "<html>Enter <font color=blue><b>FPS</font>:  (current: " + fps + ")"
+                            + "</b><br><br></html>");
+            Font font = new Font("Arial", java.awt.Font.PLAIN, 14);
+            JTextField txt = new JTextField();
+            txt.setFocusable(true);
+            txt.setEditable(true);
+            txt.setToolTipText("Enter the FPS here (current: " + fps + ")");
+            txt.setSelectedTextColor(Color.RED);
+            txt.setForeground(Color.BLUE);
+            jl.setFont(font);
+            txt.setFont(font);
+            jp.add(jl, BorderLayout.NORTH);
+            jp.add(txt);
+            txt.requestFocus();
+            if (JOptionPane.showConfirmDialog(this, jp, ProgramTitle,
+                    JOptionPane.OK_CANCEL_OPTION, JOptionPane.PLAIN_MESSAGE, new ImageIcon(resizedLogo)) == 0) {
+                if (txt != null) {
+                    if (!txt.getText().trim().equals("")) {
+                        //Whenever I change this I need to stop then restart the thread
+                        fps = Integer.parseInt(txt.getText().trim());
+                                stop();
+                                start();
+
+                    } else {
+                        JOptionPane.showMessageDialog(null, "Fps cannot be null!", ProgramTitle, JOptionPane.ERROR_MESSAGE);
+                    }
+                } else {
+                    JOptionPane.showMessageDialog(null, "Invalid Fps integer!", ProgramTitle, JOptionPane.ERROR_MESSAGE);
+                }
+            } else {
+                System.out.println("Input Cancelled");
+            }
+        });
+        itemChangeUpdates.addActionListener(actionEvent -> {
+            JPanel jp = new JPanel();
+            jp.setLayout(new BorderLayout());
+            JLabel jl = new JLabel(
+                    "<html>Enter <font color=blue><b>UPS</font>:  (current: " + ups + ")"
+                            + "</b><br><br></html>");
+            Font font = new Font("Arial", java.awt.Font.PLAIN, 14);
+            JTextField txt = new JTextField();
+            txt.setFocusable(true);
+            txt.setEditable(true);
+            txt.setToolTipText("Enter the updates/s here (current: " + ups + ")");
+            txt.setSelectedTextColor(Color.RED);
+            txt.setForeground(Color.BLUE);
+            jl.setFont(font);
+            txt.setFont(font);
+            jp.add(jl, BorderLayout.NORTH);
+            jp.add(txt);
+            txt.requestFocus();
+            if (JOptionPane.showConfirmDialog(this, jp, ProgramTitle,
+                    JOptionPane.OK_CANCEL_OPTION, JOptionPane.PLAIN_MESSAGE, new ImageIcon(resizedLogo)) == 0) {
+                if (txt != null) {
+                    if (!txt.getText().trim().equals("")) {
+                        ups = Integer.parseInt(txt.getText().trim());
+                        stop();
+                        start();
+                    } else {
+                        JOptionPane.showMessageDialog(null, "Ups cannot be null!", ProgramTitle, JOptionPane.ERROR_MESSAGE);
+                    }
+                } else {
+                    JOptionPane.showMessageDialog(null, "Invalid Ups integer!", ProgramTitle, JOptionPane.ERROR_MESSAGE);
+                }
+            } else {
+                System.out.println("Input Cancelled");
+            }
+        });
+        itemChangeBackgroundColor.addActionListener(ActionListener -> {
+            JPanel jp = new JPanel();
+            jp.setLayout(new BorderLayout());
+            JLabel jl = new JLabel(
+                    "<html>Enter <font color=blue><b>UPS</font>:  (current: " + ups + ")"
+                            + "</b><br><br></html>");
+            Font font = new Font("Arial", java.awt.Font.PLAIN, 14);
+            JTextField txt = new JTextField();
+            txt.setFocusable(true);
+            txt.setEditable(true);
+            txt.setToolTipText("Enter the background color here (current: " + ups + ")");
+            txt.setSelectedTextColor(Color.RED);
+            txt.setForeground(Color.BLUE);
+            jl.setFont(font);
+            txt.setFont(font);
+            jp.add(jl, BorderLayout.NORTH);
+            jp.add(txt);
+            txt.requestFocus();
+            if (JOptionPane.showConfirmDialog(this, jp, ProgramTitle,
+                    JOptionPane.OK_CANCEL_OPTION, JOptionPane.PLAIN_MESSAGE, new ImageIcon(resizedLogo)) == 0) {
+                if (txt != null) {
+                    if (!txt.getText().trim().equals("")) {
+                        int backgroundcolor = Integer.parseInt(txt.getText().trim());
+                        image = new BufferedImage(width, height, BufferedImage.TYPE_INT_RGB);
+                        pixels = ((DataBufferInt) image.getRaster().getDataBuffer()).getData();
+                        for (int i = 0 ; i < pixels.length ; i++) {
+                            pixels[i] = backgroundcolor;
+                        }
+                    } else {
+                        JOptionPane.showMessageDialog(null, "Ups cannot be null!", ProgramTitle, JOptionPane.ERROR_MESSAGE);
+                    }
+                } else {
+                    JOptionPane.showMessageDialog(null, "Invalid Ups integer!", ProgramTitle, JOptionPane.ERROR_MESSAGE);
+                }
+            } else {
+                System.out.println("Input Cancelled");
+            }
+
+        });
+/* Done:
         //Add item for paint color list guide (int -> color name/hexcolor code)
         //or else if statements
         //Add item for save to config, add save to close listener
         //Add item for reset config override
         //Actually for erasing I just need to pick black color then it erases it because the background is black by default, can add item for that later
         //Add item for changing paint size (just remove the sprite then recreate one with bigger width, height
+        */
+
         //Add item for clearing all paint (just make all pixels black, or recreate image)
         //Add item for changing background color instead of black to something else (and then I have to check if its black or not later on)
-        //Add item for changing scale
+        //Add item for changing scale, fps, updates
+        //Add create new drawboard item
     }
 
     /**
@@ -546,6 +711,8 @@ public class Graphics extends Canvas implements Runnable {
             writer.println("# Copyright @ " + programAuthor);
             writer.println("program_title = " + ProgramTitle);
             writer.println("paint_color = " + square1.getColor());
+            writer.println("paint_width = " + square1.getWidth());
+            writer.println("paint_height = " + square1.getHeight());
             writer.close();
             if (!closeListener) {
                 JOptionPane.showMessageDialog(this, "Successfully saved to config", ProgramTitle, JOptionPane.INFORMATION_MESSAGE);
@@ -639,7 +806,7 @@ public class Graphics extends Canvas implements Runnable {
         } catch (IOException e) {
             e.printStackTrace();
         }
-        }
+    }
 
     /**
      * Initializes Listeners
@@ -771,6 +938,9 @@ public class Graphics extends Canvas implements Runnable {
         }
     }
 
+    /**
+     * The thread
+     */
     @Override
     public void run() {
         double frameUpdateinteval = 1000000000.0 / fps;
@@ -795,7 +965,7 @@ public class Graphics extends Canvas implements Runnable {
                 deltaFrame--;
             }
         }
-        stop();
+        //stop();
     }
 
     private class MyKeyListener implements KeyListener {
@@ -854,8 +1024,8 @@ public class Graphics extends Canvas implements Runnable {
             //if (e.getX() <= width*scale && e.getY() <= height*scale) {
             //System.out.println("h: " + mainMenuBar.getSize().getHeight() + " w: " + mainMenuBar.getSize().getWidth());
             //if (e.getY() <= (height - mainMenuBar.getSize().getHeight())*scale & e.getX() <= ((width - 10) *scale)) {
-                //xSquare1 = e.getX()/scale-(square1.getWidth()/2);
-                //ySquare1 = e.getY()/scale-(square1.getHeight()/2);
+            //xSquare1 = e.getX()/scale-(square1.getWidth()/2);
+            //ySquare1 = e.getY()/scale-(square1.getHeight()/2);
             //}
 
         }
