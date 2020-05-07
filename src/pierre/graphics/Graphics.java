@@ -77,10 +77,12 @@ public class Graphics extends Canvas implements Runnable {
     public static String paintLogsDir = "logs";
     public static int defaultColor = 0xFF00FF;
     private static boolean closeListener = false;
-    public static int colorBeforeErase;
+    //public static int colorBeforeErase;
     public static int defaultPaintWidth = 16;
     public static int defaultPaintHeight = 16;
     public static int defaultBackgroundColor = 0xFFFFFF;
+    public static int currentBackgroundColor;
+    public static int currentPaintColor;
 
     /**
      * Constructor
@@ -109,6 +111,7 @@ public class Graphics extends Canvas implements Runnable {
         pixels = ((DataBufferInt) image.getRaster().getDataBuffer()).getData();
         for (int i = 0 ; i < pixels.length ; i++) {
             pixels[i] = defaultBackgroundColor; //nu vit bakgrund
+            currentBackgroundColor = defaultBackgroundColor;
         }
         Dimension size = new Dimension(scale*width, scale*height);
         frame.setJMenuBar(mainMenuBar);
@@ -343,7 +346,7 @@ public class Graphics extends Canvas implements Runnable {
                         if (!txt.getText().trim().equals("")) {
                             int color = Integer.parseInt(txt.getText().trim());
                             square1.setColor(color);
-                            Graphics.colorBeforeErase = color;
+                            //Graphics.colorBeforeErase = color;
 
                         } else {
                             JOptionPane.showMessageDialog(null, "Color cannot be null!", ProgramTitle, JOptionPane.ERROR_MESSAGE);
@@ -367,14 +370,15 @@ public class Graphics extends Canvas implements Runnable {
         });
         itemErasePaint.addActionListener(actionEvent -> {
             if (itemErasePaint.isSelected()) {
-                square1.setEraseColor(00000000);
+                square1.setEraseColor(currentBackgroundColor);
                 itemErasePaint.setToolTipText("Click here to stop erasing paint");
             } else {
-                if (colorBeforeErase != 0) {
+                /*if (colorBeforeErase != 0) {
                     square1.setColor(colorBeforeErase);
                 } else {
                     square1.setColor(defaultColor);
-                }
+                }*/
+                square1.setColor(currentPaintColor);
                 itemErasePaint.setToolTipText("Click here to start erasing paint");
             }
         });
@@ -431,6 +435,7 @@ public class Graphics extends Canvas implements Runnable {
             pixels = ((DataBufferInt) image.getRaster().getDataBuffer()).getData();
             for (int i = 0 ; i < pixels.length ; i++) {
                 pixels[i] = defaultBackgroundColor; //nu vit bakgrund
+                currentBackgroundColor = defaultBackgroundColor;
             }
         });
         itemChangeScale.addActionListener(actionEvent -> {
@@ -566,6 +571,7 @@ public class Graphics extends Canvas implements Runnable {
                         pixels = ((DataBufferInt) image.getRaster().getDataBuffer()).getData();
                         for (int i = 0 ; i < pixels.length ; i++) {
                             pixels[i] = backgroundcolor;
+                            currentBackgroundColor = backgroundcolor;
                         }
                     } else {
                         JOptionPane.showMessageDialog(null, "Ups cannot be null!", ProgramTitle, JOptionPane.ERROR_MESSAGE);
@@ -623,17 +629,19 @@ public class Graphics extends Canvas implements Runnable {
                     //I had to create new sprite because otherwise square1 is null and I can't set color
                     //anyways now it keeps the color from the previous time application was opened
                     square1 = new Sprite(Integer.parseInt(paint_width),Integer.parseInt(paint_height), Integer.parseInt(paint_color));
-                    Graphics.colorBeforeErase = Integer.parseInt(paint_color);
+                    currentPaintColor = Integer.parseInt(paint_color);
+                    //Graphics.colorBeforeErase = Integer.parseInt(paint_color);
                     firstTime = false;
                 } else {
                     square1.setWidth(Integer.parseInt(paint_width));
                     square1.setHeight(Integer.parseInt(paint_height));
                     square1.setColor(Integer.parseInt(paint_color));
-                    Graphics.colorBeforeErase = Integer.parseInt(paint_color);
+                    currentPaintColor = Integer.parseInt(paint_color);
+                    //Graphics.colorBeforeErase = Integer.parseInt(paint_color);
                 }
-                if (square1.getColor() == 00000000) {
+                /*if (square1.getColor() == 00000000) {
                     itemErasePaint.setSelected(true);
-                }
+                }*/
                 System.out.println("Running config check...");
                 System.out.println("Program Title: " + ProgramTitle);
                 System.out.println("Paint Color: " + paint_color);
@@ -977,7 +985,8 @@ public class Graphics extends Canvas implements Runnable {
         @Override
         public void keyPressed(KeyEvent keyEvent) {
             if (firstTime) {
-                square1 = new Sprite(16,16,0xFF00FF);
+                square1 = new Sprite(16,16,defaultColor);
+                currentPaintColor = defaultColor;
                 firstTime = false;
             }
             if (keyEvent.getKeyChar()=='a') {
@@ -1015,7 +1024,8 @@ public class Graphics extends Canvas implements Runnable {
                 //System.out.println("return because x or y is out of bounds");
             } else {
                 if (firstTime) {
-                    square1 = new Sprite(16,16,0xFF00FF);
+                    square1 = new Sprite(16,16,defaultColor);
+                    currentPaintColor = defaultColor;
                     firstTime = false;
                 }
                 xSquare1 = e.getX()/scale;

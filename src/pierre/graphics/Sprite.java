@@ -71,7 +71,8 @@ public class Sprite {
             pixels[i] = color;
         }
         this.color = color;
-        Graphics.colorBeforeErase = color;
+        //Graphics.colorBeforeErase = color;
+        Graphics.currentPaintColor = color;
         System.out.println("Set Color to " + color);
     }
 
