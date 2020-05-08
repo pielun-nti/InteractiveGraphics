@@ -17,6 +17,9 @@ men ska fortsätta på change paint size funktionen nästa lektion.
 Jag har lagt till ändra bakgrundsfärg, ändra fps, ändra ups/s, skapa ny drawboard, ny default bakgrundsfärg, mm..
 Nästa lektion ska jag lägga till fler funktioner.
 
+# Lektion 08-05-2020
+Jag har lagt till lite småsaker och ska fortsätta med undo och redo funktionen nästa lektion nog.
+
 # Planering
 Jag har tänkt göra ett ritprogram som ha liknande funktioner som paint och/eller andra ritprogram. 
 Huvudiden är att det ska gå att rita med olika färger och att man ska kunna spara det till en image och öppna som en image. 

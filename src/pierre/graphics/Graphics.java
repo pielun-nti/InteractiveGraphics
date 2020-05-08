@@ -11,6 +11,7 @@ import java.awt.image.DataBufferInt;
 import java.io.*;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.stream.Stream;
 
@@ -64,6 +65,7 @@ public class Graphics extends Canvas implements Runnable {
     private JMenuItem itemChangeUpdates;
     private JMenuItem itemChangeScale;
     private JMenuItem itemChangeBackgroundColor;
+    private JMenuItem itemUndoLastPaint;
     private JMenuItem itemAbout;
     private Font myFont;
     private static Font itemFont;
@@ -83,6 +85,7 @@ public class Graphics extends Canvas implements Runnable {
     public static int defaultBackgroundColor = 0xFFFFFF;
     public static int currentBackgroundColor;
     public static int currentPaintColor;
+    private static ArrayList<String> pixelsHistory = new ArrayList<>();
 
     /**
      * Constructor
@@ -157,6 +160,7 @@ public class Graphics extends Canvas implements Runnable {
         itemChangeFPS = new JMenuItem("Change Frames Per Seconds");
         itemChangeUpdates = new JMenuItem("Change Updates Per Seconds");
         itemChangeBackgroundColor = new JMenuItem("Change Background Color");
+        itemUndoLastPaint = new JMenuItem("Undo Last Paint Operation");
         itemAbout = new JMenuItem("About this program");
     }
 
@@ -548,13 +552,13 @@ public class Graphics extends Canvas implements Runnable {
             JPanel jp = new JPanel();
             jp.setLayout(new BorderLayout());
             JLabel jl = new JLabel(
-                    "<html>Enter <font color=blue><b>UPS</font>:  (current: " + ups + ")"
+                    "<html>Enter <font color=blue><b>Background Color</font>:  (current: " + currentBackgroundColor + ")"
                             + "</b><br><br></html>");
             Font font = new Font("Arial", java.awt.Font.PLAIN, 14);
             JTextField txt = new JTextField();
             txt.setFocusable(true);
             txt.setEditable(true);
-            txt.setToolTipText("Enter the background color here (current: " + ups + ")");
+            txt.setToolTipText("Enter the background color here (current: " + currentBackgroundColor + ")");
             txt.setSelectedTextColor(Color.RED);
             txt.setForeground(Color.BLUE);
             jl.setFont(font);
@@ -574,29 +578,35 @@ public class Graphics extends Canvas implements Runnable {
                             currentBackgroundColor = backgroundcolor;
                         }
                     } else {
-                        JOptionPane.showMessageDialog(null, "Ups cannot be null!", ProgramTitle, JOptionPane.ERROR_MESSAGE);
+                        JOptionPane.showMessageDialog(null, "Background color cannot be null!", ProgramTitle, JOptionPane.ERROR_MESSAGE);
                     }
                 } else {
-                    JOptionPane.showMessageDialog(null, "Invalid Ups integer!", ProgramTitle, JOptionPane.ERROR_MESSAGE);
+                    JOptionPane.showMessageDialog(null, "Invalid Background color integer!", ProgramTitle, JOptionPane.ERROR_MESSAGE);
                 }
             } else {
                 System.out.println("Input Cancelled");
             }
 
         });
+        itemUndoLastPaint.addActionListener(ActionListener -> {
+            if (pixelsHistory != null & pixelsHistory.size() > 1) {
+                int length = pixelsHistory.size() - 1;
+                //pixels[length] = currentBackgroundColor;
+                //pixelsHistory.remove(length);
+            }
+        });
 /* Done:
-        //Add item for paint color list guide (int -> color name/hexcolor code)
-        //or else if statements
         //Add item for save to config, add save to close listener
         //Add item for reset config override
-        //Actually for erasing I just need to pick black color then it erases it because the background is black by default, can add item for that later
+        //Add item for erasing
         //Add item for changing paint size (just remove the sprite then recreate one with bigger width, height
-        */
-
-        //Add item for clearing all paint (just make all pixels black, or recreate image)
-        //Add item for changing background color instead of black to something else (and then I have to check if its black or not later on)
+        //Add item for changing background color
         //Add item for changing scale, fps, updates
         //Add create new drawboard item
+        */
+//Kanske lägg till så att jag kan undoa och redoa det jag ritar, kanske så att den sparar det senaste jag ritade i en array som historik och sen kan jag bara ta den senaste och minska med en.
+
+
     }
 
     /**
@@ -814,6 +824,94 @@ public class Graphics extends Canvas implements Runnable {
         } catch (IOException e) {
             e.printStackTrace();
         }
+        try {
+            BufferedImage image = null;
+            image = ImageIO.read(getClass().getResource("../img/reseticon.png"));
+            BufferedImage resizedImage = resize(image, 40, 40);
+            itemResetConfigOverride.setIcon(new ImageIcon(resizedImage));
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        try {
+            BufferedImage image = null;
+            image = ImageIO.read(getClass().getResource("../img/Saveas.png"));
+            BufferedImage resizedImage = resize(image, 40, 40);
+            itemSaveImageAs.setIcon(new ImageIcon(resizedImage));
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        try {
+            BufferedImage image = null;
+            image = ImageIO.read(getClass().getResource("../img/Saveas.png"));
+            BufferedImage resizedImage = resize(image, 40, 40);
+            itemSaveToConfig.setIcon(new ImageIcon(resizedImage));
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        try {
+            BufferedImage image = null;
+            image = ImageIO.read(getClass().getResource("../img/importi.png"));
+            BufferedImage resizedImage = resize(image, 40, 40);
+            itemImportImage.setIcon(new ImageIcon(resizedImage));
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        try {
+            BufferedImage image = null;
+            image = ImageIO.read(getClass().getResource("../img/createnewdrawboard.png"));
+            BufferedImage resizedImage = resize(image, 40, 40);
+            itemCreateNewDrawboard.setIcon(new ImageIcon(resizedImage));
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        try {
+            BufferedImage image = null;
+            image = ImageIO.read(getClass().getResource("../img/size.png"));
+            BufferedImage resizedImage = resize(image, 40, 40);
+            itemChangePaintSize.setIcon(new ImageIcon(resizedImage));
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        try {
+            BufferedImage image = null;
+            image = ImageIO.read(getClass().getResource("../img/erase.png"));
+            BufferedImage resizedImage = resize(image, 40, 40);
+            itemErasePaint.setIcon(new ImageIcon(resizedImage));
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        try {
+            BufferedImage image = null;
+            image = ImageIO.read(getClass().getResource("../img/backgroundcolor.png"));
+            BufferedImage resizedImage = resize(image, 40, 40);
+            itemChangeBackgroundColor.setIcon(new ImageIcon(resizedImage));
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        try {
+            BufferedImage image = null;
+            image = ImageIO.read(getClass().getResource("../img/fps.png"));
+            BufferedImage resizedImage = resize(image, 40, 40);
+            itemChangeFPS.setIcon(new ImageIcon(resizedImage));
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        try {
+            BufferedImage image = null;
+            image = ImageIO.read(getClass().getResource("../img/updates.png"));
+            BufferedImage resizedImage = resize(image, 40, 40);
+            itemChangeUpdates.setIcon(new ImageIcon(resizedImage));
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        try {
+            BufferedImage image = null;
+            image = ImageIO.read(getClass().getResource("../img/scale.png"));
+            BufferedImage resizedImage = resize(image, 40, 40);
+            itemChangeScale.setIcon(new ImageIcon(resizedImage));
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
     /**
@@ -919,6 +1017,7 @@ public class Graphics extends Canvas implements Runnable {
                         // }
                         //if (j <= width*scale & i < (height*mainMenuBar.getSize().getWidth())*scale || j <= width*scale & i <= (-height * scale)) {
                         pixels[(ySquare1 + i) * width + xSquare1 + j] = square1.getPixels()[i * square1.getWidth() + j];
+                        //pixelsHistory.add();
                         //  System.out.println((ySquare1 + i) * width + xSquare1 + j + "= " + square1.getPixels()[i * square1.getWidth() + j]);
                         //}
                     } catch (Exception ex) {
