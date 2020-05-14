@@ -20,6 +20,9 @@ Nästa lektion ska jag lägga till fler funktioner.
 # Lektion 08-05-2020
 Jag har lagt till lite småsaker och ska fortsätta med undo och redo funktionen nästa lektion nog.
 
+# Lektion 14-05-2020
+Jag har inte gjort mycket denna lektion eftersom jag pluggade fysik istället. Tog bort lite onödiga variabler.
+
 # Planering
 Jag har tänkt göra ett ritprogram som ha liknande funktioner som paint och/eller andra ritprogram. 
 Huvudiden är att det ska gå att rita med olika färger och att man ska kunna spara det till en image och öppna som en image. 

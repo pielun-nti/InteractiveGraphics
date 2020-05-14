@@ -40,10 +40,6 @@ public class Graphics extends Canvas implements Runnable {
     private double t=0;
     private int xSquare1 = 0;
     private int ySquare1 = 0;
-    private int vxSquare1 = 0;
-    private int vySquare1 = 0;
-    private int xSquare2 = 100;
-    private int ySquare2 = 100;
     private JMenuBar mainMenuBar;
     private JMenu menuFile;
     private JMenu menuTools;
