@@ -23,6 +23,10 @@ Jag har lagt till lite småsaker och ska fortsätta med undo och redo funktionen
 # Lektion 14-05-2020
 Jag har inte gjort mycket denna lektion eftersom jag pluggade fysik istället. Tog bort lite onödiga variabler.
 
+# Lektion 15-05-2020
+Jag har jobbat med undo funktionen, fick inte till det helt, men jag kommer kanske jobba lite hemma på det på någon lovdag.
+Men mitt program känns ganska färdigt ändå därför jag har de funktioner jag tycker ett ritprogram måste ha. Allt förutom undo funktionen fungerar.
+
 # Planering
 Jag har tänkt göra ett ritprogram som ha liknande funktioner som paint och/eller andra ritprogram. 
 Huvudiden är att det ska gå att rita med olika färger och att man ska kunna spara det till en image och öppna som en image. 

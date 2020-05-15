@@ -12,6 +12,7 @@ import java.io.*;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.stream.Stream;
 
@@ -82,6 +83,9 @@ public class Graphics extends Canvas implements Runnable {
     public static int currentBackgroundColor;
     public static int currentPaintColor;
     private static ArrayList<String> pixelsHistory = new ArrayList<>();
+    private int yOldPosition = 0;
+    private int xOldPosition = 0;
+    private int timesOldPositionUsed = 0;
 
     /**
      * Constructor
@@ -217,6 +221,9 @@ public class Graphics extends Canvas implements Runnable {
         itemChangeBackgroundColor.setFont(itemFont);
         itemChangeBackgroundColor.setIconTextGap(10);
         itemChangeBackgroundColor.setToolTipText("Click here to change the background color");
+        itemUndoLastPaint.setFont(itemFont);
+        itemUndoLastPaint.setIconTextGap(10);
+        itemUndoLastPaint.setToolTipText("Click here to undo last paint operation");
         menuFile.add(itemExitProgram);
         menuFile.add(itemCreateNewDrawboard);
         menuFile.add(itemImportImage);
@@ -230,6 +237,7 @@ public class Graphics extends Canvas implements Runnable {
         menuSettings.add(itemChangeFPS);
         menuSettings.add(itemChangeUpdates);
         menuSettings.add(itemChangeBackgroundColor);
+        menuSettings.add(itemUndoLastPaint);
         menuAbout.add(itemAbout);
         mainMenuBar.add(menuFile);
         mainMenuBar.add(menuTools);
@@ -587,8 +595,14 @@ public class Graphics extends Canvas implements Runnable {
         itemUndoLastPaint.addActionListener(ActionListener -> {
             if (pixelsHistory != null & pixelsHistory.size() > 1) {
                 int length = pixelsHistory.size() - 1;
-                //pixels[length] = currentBackgroundColor;
-                //pixelsHistory.remove(length);
+                for (int il = 0; il <= length; il++) {
+                    String msg = pixelsHistory.get(length);
+                    String[] args = msg.split("\\|");
+                    int yPosition = Integer.parseInt(args[0]);
+                    int xPosition = Integer.parseInt(args[1]);
+                    //pixels[yPosition + xPosition] = currentBackgroundColor;
+                    pixelsHistory.remove(length);
+                }
             }
         });
 /* Done:
@@ -1013,7 +1027,6 @@ public class Graphics extends Canvas implements Runnable {
                         // }
                         //if (j <= width*scale & i < (height*mainMenuBar.getSize().getWidth())*scale || j <= width*scale & i <= (-height * scale)) {
                         pixels[(ySquare1 + i) * width + xSquare1 + j] = square1.getPixels()[i * square1.getWidth() + j];
-                        //pixelsHistory.add();
                         //  System.out.println((ySquare1 + i) * width + xSquare1 + j + "= " + square1.getPixels()[i * square1.getWidth() + j]);
                         //}
                     } catch (Exception ex) {
@@ -1079,6 +1092,7 @@ public class Graphics extends Canvas implements Runnable {
 
         @Override
         public void keyPressed(KeyEvent keyEvent) {
+            timesOldPositionUsed++;
             if (firstTime) {
                 square1 = new Sprite(16,16,defaultColor);
                 currentPaintColor = defaultColor;
@@ -1118,6 +1132,7 @@ public class Graphics extends Canvas implements Runnable {
             if (e.getY() > height*scale || e.getX() > width*scale) {
                 //System.out.println("return because x or y is out of bounds");
             } else {
+                timesOldPositionUsed++;
                 if (firstTime) {
                     square1 = new Sprite(16,16,defaultColor);
                     currentPaintColor = defaultColor;
@@ -1125,6 +1140,11 @@ public class Graphics extends Canvas implements Runnable {
                 }
                 xSquare1 = e.getX()/scale;
                 ySquare1 = e.getY()/scale;
+                //if (timesOldPositionUsed == 0 || timesOldPositionUsed == 2 || timesOldPositionUsed == 4 || timesOldPositionUsed == 6 || timesOldPositionUsed == 8) {
+                    xOldPosition = xSquare1;
+                    yOldPosition = ySquare1;
+                    pixelsHistory.add(e.getY()/scale + "|" + e.getX()/scale);
+                //}
             }
             //if (e.getX() <= width*scale && e.getY() <= height*scale) {
             //System.out.println("h: " + mainMenuBar.getSize().getHeight() + " w: " + mainMenuBar.getSize().getWidth());
@@ -1150,12 +1170,17 @@ public class Graphics extends Canvas implements Runnable {
             if (mouseEvent.getY() > height*scale || mouseEvent.getX() > width*scale) {
                 //System.out.println("return because x or y is out of bounds");
             } else {
+                timesOldPositionUsed++;
                 /*if (firstTime) {
                     square1 = new Sprite(16,16,defaultColor);
                     firstTime = false;
                 }*/
                 xSquare1 = mouseEvent.getX() / scale;
                 ySquare1 = mouseEvent.getY() / scale;
+                //if (timesOldPositionUsed == 0 || timesOldPositionUsed == 2 || timesOldPositionUsed == 4 || timesOldPositionUsed == 6 || timesOldPositionUsed == 8) {
+                    xOldPosition = xSquare1;
+                    yOldPosition = ySquare1;
+                //}
             }
         }
 
