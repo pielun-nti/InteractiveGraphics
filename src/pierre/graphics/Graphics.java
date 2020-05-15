@@ -636,7 +636,6 @@ public class Graphics extends Canvas implements Runnable {
         boolean empty = !config.exists() || config.length() == 0;
         resetConfigIfEmpty();
 
-        //Also if not empty file read from config and add port and ip to variables from config
         if (!empty) {
             //Read config and add to variables
             try (Stream<String> all_lines = Files.lines(Paths.get(System.getProperty("user.dir") + "/" + paintCoreDir + "/" + configFileName))) {
