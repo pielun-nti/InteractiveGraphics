@@ -25,7 +25,8 @@ Jag har inte gjort mycket denna lektion eftersom jag pluggade fysik istället. T
 
 # Lektion 15-05-2020
 Jag har jobbat med undo funktionen, fick inte till det helt, men jag kommer kanske jobba lite hemma på det på någon lovdag.
-Men mitt program känns ganska färdigt ändå därför jag har de funktioner jag tycker ett ritprogram måste ha. Allt förutom undo funktionen fungerar.
+Men mitt program känns ganska färdigt ändå därför jag har de funktioner jag tycker ett ritprogram bör ha. Allt förutom undo funktionen fungerar.
+Programmet har de funktioner som jag hade tänkt i planeringen förutom att skapa trianglar. Programmet har fler andra funktioner än de som jag skrivit i planeringen.
 
 # Planering
 Jag har tänkt göra ett ritprogram som ha liknande funktioner som paint och/eller andra ritprogram. 
