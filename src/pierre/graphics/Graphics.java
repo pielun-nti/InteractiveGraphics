@@ -237,7 +237,7 @@ public class Graphics extends Canvas implements Runnable {
         menuSettings.add(itemChangeFPS);
         menuSettings.add(itemChangeUpdates);
         menuSettings.add(itemChangeBackgroundColor);
-        menuSettings.add(itemUndoLastPaint);
+        //menuSettings.add(itemUndoLastPaint);
         menuAbout.add(itemAbout);
         mainMenuBar.add(menuFile);
         mainMenuBar.add(menuTools);
@@ -593,7 +593,7 @@ public class Graphics extends Canvas implements Runnable {
 
         });
         itemUndoLastPaint.addActionListener(ActionListener -> {
-            if (pixelsHistory != null & pixelsHistory.size() > 1) {
+            /*if (pixelsHistory != null & pixelsHistory.size() > 1) {
                 int length = pixelsHistory.size() - 1;
                 for (int il = 0; il <= length; il++) {
                     String msg = pixelsHistory.get(length);
@@ -603,19 +603,8 @@ public class Graphics extends Canvas implements Runnable {
                     //pixels[yPosition + xPosition] = currentBackgroundColor;
                     pixelsHistory.remove(length);
                 }
-            }
+            }*/
         });
-/* Done:
-        //Add item for save to config, add save to close listener
-        //Add item for reset config override
-        //Add item for erasing
-        //Add item for changing paint size (just remove the sprite then recreate one with bigger width, height
-        //Add item for changing background color
-        //Add item for changing scale, fps, updates
-        //Add create new drawboard item
-        */
-//Kanske lägg till så att jag kan undoa och redoa det jag ritar, kanske så att den sparar det senaste jag ritade i en array som historik och sen kan jag bara ta den senaste och minska med en.
-
 
     }
 
@@ -704,9 +693,7 @@ public class Graphics extends Canvas implements Runnable {
      */
     public void resetConfigOverride() {
         config = new File(System.getProperty("user.dir") + "/" + paintCoreDir + "/" + configFileName);
-//boolean empty = !config.exists() || config.length() == 0;
         try {
-//            if (empty) {
             PrintWriter writer = new PrintWriter(config);
             writer.println("# Created config file at " + new Date(System.currentTimeMillis()));
             writer.println("# Copyright @ " + programAuthor);
@@ -730,9 +717,7 @@ public class Graphics extends Canvas implements Runnable {
      */
     public void saveToConfig() {
         config = new File(System.getProperty("user.dir") + "/" + paintCoreDir + "/" + configFileName);
-//boolean empty = !config.exists() || config.length() == 0;
         try {
-//            if (empty) {
             PrintWriter writer = new PrintWriter(config);
             writer.println("# Created config file at " + new Date(System.currentTimeMillis()));
             writer.println("# Copyright @ " + programAuthor);
@@ -1017,13 +1002,7 @@ public class Graphics extends Canvas implements Runnable {
 
             for (int i = 0; i < square1.getHeight(); i++) {
                 for (int j = 0; j < square1.getWidth(); j++) {
-                    // if ((ySquare1+i)* * width <= (width * scale) & (xSquare1+)) {
-
-                    //}
                     try {
-                        //if ((ySquare1 + i) * height + j > height) {
-                        //     System.out.println("return because y is of out bounds");
-                        // }
                         //if (j <= width*scale & i < (height*mainMenuBar.getSize().getWidth())*scale || j <= width*scale & i <= (-height * scale)) {
                         pixels[(ySquare1 + i) * width + xSquare1 + j] = square1.getPixels()[i * square1.getWidth() + j];
                         //  System.out.println((ySquare1 + i) * width + xSquare1 + j + "= " + square1.getPixels()[i * square1.getWidth() + j]);
@@ -1098,29 +1077,25 @@ public class Graphics extends Canvas implements Runnable {
                 firstTime = false;
             }
             if (keyEvent.getKeyChar()=='a') {
-                //vxSquare1 = -5;
                 xSquare1 -= 5;
             } else if (keyEvent.getKeyChar()=='d') {
-                //vxSquare1 = 5;
                 xSquare1 += 5;
             } else if (keyEvent.getKeyChar()=='w') {
-                //vySquare1 = -5;
                 ySquare1 -= 5;
             } else if (keyEvent.getKeyChar()=='s') {
-                //vySquare1 = 5;
                 ySquare1 += 5;
             }
         }
 
         @Override
         public void keyReleased(KeyEvent keyEvent) {
-            if (keyEvent.getKeyChar()=='a' || keyEvent.getKeyChar()=='d') {
+            /*if (keyEvent.getKeyChar()=='a' || keyEvent.getKeyChar()=='d') {
                 //vxSquare1 = 0;
                 //xSquare1 = 5;
             } else if (keyEvent.getKeyChar()=='w' || keyEvent.getKeyChar()=='s') {
                 //vySquare1 = 0;
                 //ySquare1 = 5;
-            }
+            }*/
         }
     }
 
@@ -1139,11 +1114,9 @@ public class Graphics extends Canvas implements Runnable {
                 }
                 xSquare1 = e.getX()/scale;
                 ySquare1 = e.getY()/scale;
-                //if (timesOldPositionUsed == 0 || timesOldPositionUsed == 2 || timesOldPositionUsed == 4 || timesOldPositionUsed == 6 || timesOldPositionUsed == 8) {
                     xOldPosition = xSquare1;
                     yOldPosition = ySquare1;
                     pixelsHistory.add(e.getY()/scale + "|" + e.getX()/scale);
-                //}
             }
             //if (e.getX() <= width*scale && e.getY() <= height*scale) {
             //System.out.println("h: " + mainMenuBar.getSize().getHeight() + " w: " + mainMenuBar.getSize().getWidth());
@@ -1170,16 +1143,10 @@ public class Graphics extends Canvas implements Runnable {
                 //System.out.println("return because x or y is out of bounds");
             } else {
                 timesOldPositionUsed++;
-                /*if (firstTime) {
-                    square1 = new Sprite(16,16,defaultColor);
-                    firstTime = false;
-                }*/
                 xSquare1 = mouseEvent.getX() / scale;
                 ySquare1 = mouseEvent.getY() / scale;
-                //if (timesOldPositionUsed == 0 || timesOldPositionUsed == 2 || timesOldPositionUsed == 4 || timesOldPositionUsed == 6 || timesOldPositionUsed == 8) {
                     xOldPosition = xSquare1;
                     yOldPosition = ySquare1;
-                //}
             }
         }
 

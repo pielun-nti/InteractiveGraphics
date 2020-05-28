@@ -1,5 +1,47 @@
 # InteractiveGraphics
 
+# Post Mortem 
+
+# 1. Inledning
+Jag har programmerat ett ritprogram i java. Det har gått bra tycker jag.
+
+# 1.1 Syfte/Mål
+Syftet med att programmera med interaktivgrafik var nog att bli bättre på att hålla på med grafik som exempelvis pixlar.
+Syftet och målet med mitt ritprogram var att den ska kunnas användas till att rita saker med olika färger och storlek och spara det man ritat och det kan den. 
+Mer om vad jag hade planerat finns i planeringen längre ner i denna readme.
+
+# 1.2 Arbetssätt och genomförande
+Jag började med att göra så att man kan rita med mouse drag funktion och jag la sedan till en massa fler funktioner.
+Jag satte mål till mig själv om vad jag skulle programmera för funktion härnäst på varje lektion och tänkte "det här ska jag lägga till" och jag skrev kommentarer så att jag skulle komma ihåg det.
+När den funktionen var klart så fortsatte jag att programmera på nästa planerad funktion.
+När någon funktion var färdig så skrev jag att detta var färdigt i kommentar i koden.
+Flera sådana kommentarer har jag tagit bort nu eftersom programmet ska lämnas in nu.
+Min loggbok finns här under där det står vad jag har gjort på lektionerna.
+
+# 1.3 Bakgrund
+Jag har använt min dator med IntelliJ Idea som är ett programmeringsverktyg där man skriver sin programmeringskod i.
+Jag har också använt en del av programmet från läraren i programmering som han sa att vi skulle börja med.
+
+# 1.4 Positiva erfarenheter
+Jag har mest haft positiva erfarenheter därför jag tycker att det har gått bra att programmera nya funktioner samt förbättra nuvarande funktioner i princip varje lektion.
+Även fast jag inte jobbat så mycket med grafik i java så tycker jag att det har varit kul att bli bättre på grafik.
+Jag har programmerat mycket mer avancerade och komplexare program på sidan om skolan som jag ej visat för någon förutom för mina föräldrar ännu.
+
+# 1.5 Negativa erfarenheter
+Jag hade nog inga större negativa erfarenheter som jag kommer ihåg.
+
+# 1.6 Sammanfattning
+Jag tycker det har gått bra med programmeringen av programmet.
+Programmet har till och med fler funktioner än jag först tänkt att den skulle ha.
+Ritprogrammet fungerar som ett ritprogram i java ska fungera också.
+Jag förstår all programmeringskod i programmet vad det gör exakt.
+Jag hade kunnat lagt till fler funktioner och förbättra programmet om jag hade mer lektionstid till det.
+Exempelvis så skulle jag kunna lägga till undo och redo funktioner.
+Jag spelade in en video till hemsidan på webbutveckling när jag använder programmet som en showcase och den videon tänkte jag lägga in här också.
+{{< img src="showcase.mp4" alt="Video inte hittad" video="true">}}
+
+# Loggbok här under
+
 # Lektion 23-04-2020
 Fixat så att man kan rita på importade bilder, 
 fixat så man kan ändra färg på det man ska rita, 
