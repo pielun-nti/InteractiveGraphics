@@ -38,7 +38,7 @@ Jag förstår all programmeringskod i programmet vad det gör exakt.
 Jag hade kunnat lagt till fler funktioner och förbättra programmet om jag hade mer lektionstid till det.
 Exempelvis så skulle jag kunna lägga till undo och redo funktioner.
 Jag spelade in en video till hemsidan på webbutveckling när jag använder programmet som en showcase och den videon tänkte jag lägga in här också.
-{{< img src="showcase.mp4" alt="Video inte hittad" video="true">}}
+Fick inte till att embedda videon här så vill man se den får man ladda ner showcase.mp4 filen som ligger i repot.
 
 # Loggbok här under
 
