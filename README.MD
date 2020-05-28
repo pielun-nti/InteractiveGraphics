@@ -7,7 +7,7 @@ Jag har programmerat ett ritprogram i java. Det har gått bra tycker jag.
 
 # 1.1 Syfte/Mål
 Syftet med att programmera med interaktivgrafik var nog att bli bättre på att hålla på med grafik som exempelvis pixlar.
-Syftet och målet med mitt ritprogram var att den ska kunnas användas till att rita saker med olika färger och storlek och spara det man ritat och det kan den. 
+Syftet och målet med mitt ritprogram var att den ska kunnas användas till att rita saker med olika färger och storlek och spara det man ritat och det och mer kan man göra med ritprogrammet. 
 Mer om vad jag hade planerat finns i planeringen längre ner i denna readme.
 
 # 1.2 Arbetssätt och genomförande
