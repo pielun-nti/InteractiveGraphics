@@ -40,7 +40,7 @@ Exempelvis så skulle jag kunna lägga till undo och redo funktioner.
 Jag spelade in en video till hemsidan på webbutveckling när jag använder programmet som en showcase och den videon tänkte jag lägga in här också.
 Fick inte till att embedda videon här så vill man se den får man ladda ner showcase.mp4 filen som ligger i repot.
 
-Här är en länk till min hemsida och där finns video om när jag använder programmet lite: https://pielun-nti.github.io/Slutprojektpiel-webutv1/index.html
+Här är en länk till min hemsida och där finns video om när jag använder programmet lite: https://pielun-nti.github.io/Slutprojekt-webutv1/index.html
 
 # Loggbok här under
 
